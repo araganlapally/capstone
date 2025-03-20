@@ -15,42 +15,49 @@ import com.repository.CommentRepository;
 
 @Service
 public class CommentService {
-	
-	@Autowired
-	private BlogRepository blogrepository;
 
-	private CommentRepository commentRepository;
+    @Autowired
+    private BlogRepository blogRepository;
 
-	@Autowired
-	public CommentService(CommentRepository commentRepository) {
-		this.commentRepository = commentRepository;
-	}
+    @Autowired
+    private CommentRepository commentRepository;
 
-	public CommentDTO convertEntityToDTO(CommentEntity comment) {
-		CommentDTO commentDTO = new CommentDTO();
-		commentDTO.setCommentId(comment.getCommentId());
-		commentDTO.setBlogId(comment.getBlog().getBlogId());
-		commentDTO.setComment(comment.getComment());
-		return commentDTO;
-	}
-	
-	public CommentDTO createComment(int id,CommentDTO commentDTO)
-	{
-		BlogEntity blog=blogrepository.findById(id)
-				.orElseThrow(()->new ResourceNotFoundException("blog not found with id"+commentDTO.getBlogId()));
-		
-		CommentEntity comment =new CommentEntity();
-		comment.setComment(commentDTO.getComment());
-		comment.setBlog(blog);
-		CommentEntity savedComment =commentRepository.save(comment);
-		return convertEntityToDTO(savedComment);
-		
-		
-	}
-	
-	
-				
-				
-	}
+    public CommentDTO convertEntityToDTO(CommentEntity comment) {
+        return new CommentDTO(
+                comment.getCommentId(),
+                comment.getBlog().getBlogId(),
+                comment.getComment()
+        );
+    }
+
+    public CommentDTO createComment(CommentDTO commentDTO) {
+      
+        BlogEntity blog = blogRepository.findById(commentDTO.getBlogId())
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id: " + commentDTO.getBlogId()));
+
+        
+        CommentEntity comment = new CommentEntity();
+        comment.setComment(commentDTO.getComment());
+        comment.setBlog(blog);
+
+        CommentEntity savedComment = commentRepository.save(comment);
+        return convertEntityToDTO(savedComment);
+    }
+    
+    public List<CommentDTO> getCommentsByBlogId(Integer blogId) {
+        BlogEntity blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id " + blogId));
+
+        List<CommentEntity> comments = commentRepository.findByBlog(blog);
+
+        List<CommentDTO> commentDTOs = new ArrayList<>();
+        for (CommentEntity comment : comments) {
+            commentDTOs.add(convertEntityToDTO(comment));
+        }
+
+        return commentDTOs;
+    }
+
+}
 
 

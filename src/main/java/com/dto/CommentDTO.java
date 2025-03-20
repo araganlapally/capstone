@@ -9,12 +9,27 @@ public class CommentDTO {
     private int commentId;
 
     @NotNull(message = "Blog ID cannot be null")
-    private Integer blogId; 
+    private Integer blogId;
 
     @NotBlank(message = "Comment must not be empty")
     @Size(min = 3, max = 200, message = "Comment must be between 3 to 200 characters")
     private String comment;
 
+    // Constructors
+    public CommentDTO() {
+        super();
+    }
+
+    public CommentDTO(int commentId,
+                      @NotNull(message = "Blog ID cannot be null") Integer blogId,
+                      @NotBlank(message = "Comment must not be empty")
+                      @Size(min = 3, max = 200, message = "Comment must be between 3 to 200 characters") String comment) {
+        this.commentId = commentId;
+        this.blogId = blogId;
+        this.comment = comment;
+    }
+
+    
     public int getCommentId() {
         return commentId;
     }
@@ -37,17 +52,5 @@ public class CommentDTO {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public CommentDTO(@NotNull(message = "Blog ID cannot be null") Integer blogId,
-                      @NotBlank(message = "Comment must not be empty")
-                      @Size(min = 3, max = 200, message = "Comment must be between 3 to 200 characters") String comment) {
-        super();
-        this.blogId = blogId;
-        this.comment = comment;
-    }
-
-    public CommentDTO() {
-        super();
     }
 }
